@@ -11,16 +11,16 @@ Social: @publicfacingart (formal, placard voice) and @lampwrecked_ (personal voi
 ## Structure
 
 ```
-index.html            Home: full-width eye strip, wordmark, dates, email signup, hamburger menu
+index.html            Home: full-width eye strip, wordmark, dates, email signup
 api/subscribe.js      Email signup, writes to Upstash Redis (same list as the preview site)
 assets/eye-strip-72-full.jpg Full-width eye strip on the home page (2160x300, from composite 72, black corner kept)
 ```
 
 ## Reveal rule
 
-The site reveals on the same schedule as the posts, starting obscure. A page only gets a menu link once it is announced.
+The site reveals on the same schedule as the posts, starting obscure. Only the home page exists for now.
 
-To announce a page: build it, then set `announced: true` for it in the `PAGES` list near the bottom of `index.html`. Planned pages, none live yet:
+The hamburger menu was removed on Nov 12. It listed a page only once that page was announced, via an `announced` flag per page. To bring it back, restore it from commit `5acd602` (`git show 5acd602:index.html`). Planned pages, none live yet:
 
 | Page | Purpose |
 | --- | --- |

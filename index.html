@@ -37,35 +37,10 @@
 
   /* ---- top bar ---- */
   header {
-    display: flex; justify-content: space-between; align-items: center;
+    display: flex; justify-content: center; align-items: center;
     padding: calc(20px + var(--safe-t)) 24px 20px;
   }
   .wordmark { font-size: 20px; letter-spacing: .32em; font-weight: 500; }
-  .burger { width: 44px; height: 44px; display: grid; place-items: center; margin-right: -10px; }
-  .burger span, .burger span::before, .burger span::after {
-    display: block; width: 22px; height: 1px; background: var(--ink); position: relative; transition: transform .25s, opacity .25s;
-  }
-  .burger span::before, .burger span::after { content: ""; position: absolute; left: 0; }
-  .burger span::before { top: -7px; }
-  .burger span::after  { top: 7px; }
-  .burger[aria-expanded="true"] span { background: transparent; }
-  .burger[aria-expanded="true"] span::before { transform: translateY(7px) rotate(45deg); }
-  .burger[aria-expanded="true"] span::after  { transform: translateY(-7px) rotate(-45deg); }
-
-  /* ---- menu ---- */
-  #menu {
-    position: fixed; inset: 0; z-index: 10; background: var(--bone);
-    padding: calc(88px + var(--safe-t)) 24px 24px;
-    display: none; flex-direction: column; gap: 6px;
-  }
-  #menu.open { display: flex; }
-  #menu a {
-    font-size: clamp(34px, 9vw, 52px); line-height: 1.25; color: var(--ink); text-decoration: none;
-    border-bottom: 1px solid rgba(26,26,24,.14); padding: 10px 0;
-  }
-  #menu a:hover { color: var(--cyan); }
-  #menu .u { color: var(--ink-dim); margin-top: auto; }
-
   /* ---- hero ---- */
   main {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -112,10 +87,7 @@
 
 <header>
   <div class="wordmark">PUBLIC FACING</div>
-  <button class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="menu"><span></span></button>
 </header>
-
-<nav id="menu" aria-label="Site"></nav>
 
 <div class="strip">
   <!-- Full-width eye strip, 2160x300 from composite 72. Placeholder shows until it loads. -->
@@ -146,40 +118,6 @@
 <footer class="u">publicfacing.art</footer>
 
 <script>
-  /* ---------------------------------------------------------------
-     MENU
-     A page gets a link only once it is announced. To announce a page,
-     build it, then flip `announced` to true. Unannounced pages are never
-     rendered into the menu or the DOM.
-  ---------------------------------------------------------------- */
-  const PAGES = [
-    { label: "Home",      href: "/",           announced: true  },
-    { label: "Allowlist", href: "/allowlist/", announced: false },
-    { label: "Sources",   href: "/sources/",   announced: false },
-    { label: "Essays",    href: "/essays/",    announced: false },
-    { label: "Mint",      href: "/mint/",      announced: false }
-  ];
-
-  const menu = document.getElementById("menu");
-  const burger = document.getElementById("burger");
-  PAGES.filter(p => p.announced).forEach(p => {
-    const a = document.createElement("a");
-    a.href = p.href; a.textContent = p.label;
-    menu.appendChild(a);
-  });
-  const foot = document.createElement("div");
-  foot.className = "u"; foot.textContent = "Mint December 9";
-  menu.appendChild(foot);
-
-  function setMenu(open) {
-    menu.classList.toggle("open", open);
-    burger.setAttribute("aria-expanded", String(open));
-    document.body.style.overflow = open ? "hidden" : "";
-  }
-  burger.addEventListener("click", () => setMenu(!menu.classList.contains("open")));
-  menu.addEventListener("click", e => { if (e.target.tagName === "A") setMenu(false); });
-  document.addEventListener("keydown", e => { if (e.key === "Escape") setMenu(false); });
-
   /* ---------------------------------------------------------------
      EMAIL SIGNUP -> /api/subscribe (Upstash Redis, same list as the preview)
   ---------------------------------------------------------------- */
