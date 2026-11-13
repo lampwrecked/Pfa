@@ -6,7 +6,7 @@ Social: @publicfacingart (formal, placard voice) and @lampwrecked_ (personal voi
 
 ## Look
 
-"Wall": bone paper `#EFECE5`, ink `#1A1A18`, one cyan accent `#6FA3B0`, Cormorant Garamond. The wordmark is always set PUBLIC FACING in capitals, widely spaced. Use the near-black "Vault" variant only for video.
+"Wall": bone paper `#EFECE5`, ink `#1A1A18` (also the accent, no cyan), Cormorant Garamond. The wordmark is always set PUBLIC FACING in capitals, widely spaced. Use the near-black "Vault" variant only for video.
 
 ## Structure
 

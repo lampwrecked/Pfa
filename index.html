@@ -11,12 +11,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <style>
-  /* Wall: bone paper, ink, one cyan rule. */
+  /* Wall: bone paper and ink. The accent is black (ink), not cyan. */
   :root {
     --bone: #EFECE5;
     --ink: #1A1A18;
     --ink-dim: #6E6B64;
-    --cyan: #6FA3B0;
+    --accent: var(--ink);
     --safe-t: env(safe-area-inset-top, 0px);
     --safe-b: env(safe-area-inset-bottom, 0px);
   }
@@ -52,7 +52,7 @@
     color: rgba(239,236,229,.5);
   }
 
-  .rule { width: 56px; height: 2px; background: var(--cyan); }
+  .rule { width: 56px; height: 2px; background: var(--accent); }
   h1 { font-weight: 400; font-size: clamp(34px, 9vw, 60px); letter-spacing: .28em; margin-right: -.28em; line-height: 1; }
   .line { font-size: clamp(20px, 4.6vw, 26px); font-style: italic; }
   .dates { display: flex; flex-direction: column; gap: 6px; color: var(--ink-dim); }
@@ -64,14 +64,14 @@
     display: flex; align-items: center; gap: 12px;
     border-bottom: 1px solid var(--ink); padding: 6px 0;
   }
-  .invite-form:focus-within { border-bottom-color: var(--cyan); }
+  .invite-form:focus-within { border-bottom-width: 2px; padding-bottom: 5px; }
   .invite-form input {
     flex: 1; min-width: 0; background: none; border: 0; outline: 0;
     font: inherit; font-size: 20px; color: var(--ink); padding: 6px 0;
   }
   .invite-form input::placeholder { color: var(--ink-dim); font-style: italic; }
   .invite-form button { padding: 10px 2px; }
-  .invite-form button:hover { color: var(--cyan); }
+  .invite-form button:hover { color: var(--ink-dim); }
   .invite-form button:disabled { opacity: .35; cursor: default; }
   #msg { min-height: 1.4em; margin-top: 10px; color: var(--ink-dim); }
   #msg.err { color: #8a2d2d; }
