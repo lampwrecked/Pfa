@@ -71,15 +71,16 @@
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
     padding: 8px 24px 40px; text-align: center; gap: 28px;
   }
-  .eye {
-    width: min(88vw, 520px); aspect-ratio: 16 / 9; background: var(--ink);
-    position: relative; overflow: hidden;
+  .strip {
+    width: 100%; height: clamp(120px, 20vw, 280px);
+    background: var(--ink); position: relative; overflow: hidden;
   }
-  .eye img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .eye .ph {
+  .strip img { width: 100%; height: 100%; object-fit: cover; object-position: 49% 50%; display: block; }
+  .strip .ph {
     position: absolute; inset: 0; display: grid; place-items: center;
     color: rgba(239,236,229,.5);
   }
+
   .rule { width: 56px; height: 2px; background: var(--cyan); }
   h1 { font-weight: 400; font-size: clamp(34px, 9vw, 60px); letter-spacing: .28em; margin-right: -.28em; line-height: 1; }
   .line { font-size: clamp(20px, 4.6vw, 26px); font-style: italic; }
@@ -116,13 +117,13 @@
 
 <nav id="menu" aria-label="Site"></nav>
 
-<main>
-  <div class="eye">
-    <!-- Drop the cropped eye at assets/eye.jpg. Until it exists, a plain placeholder shows. -->
-    <img src="assets/eye.jpg" alt="" onload="this.nextElementSibling.remove()" onerror="this.remove()">
-    <div class="ph u">Eye crop</div>
-  </div>
+<div class="strip">
+  <!-- Full-width eye strip, 2160x300 from composite 55. Placeholder shows until it loads. -->
+  <img src="assets/eye-strip.jpg" alt="" onload="this.nextElementSibling.remove()" onerror="this.remove()">
+  <div class="ph u">Eye strip</div>
+</div>
 
+<main>
   <div class="rule"></div>
 
   <h1>PUBLIC FACING</h1>

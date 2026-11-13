@@ -11,9 +11,9 @@ Social: @publicfacingart (formal, placard voice) and @lampwrecked_ (personal voi
 ## Structure
 
 ```
-index.html        Home: wordmark, tight eye crop, dates, email signup, hamburger menu
-api/subscribe.js  Email signup, writes to Upstash Redis (same list as the preview site)
-assets/eye.jpg    The cropped eye on the home page (add this; a placeholder shows until then)
+index.html            Home: full-width eye strip, wordmark, dates, email signup, hamburger menu
+api/subscribe.js      Email signup, writes to Upstash Redis (same list as the preview site)
+assets/eye-strip.jpg  Full-width eye strip on the home page (2160x300, from composite 55)
 ```
 
 ## Reveal rule
@@ -31,7 +31,7 @@ To announce a page: build it, then set `announced: true` for it in the `PAGES` l
 
 ## Before the first deploy
 
-- Add `assets/eye.jpg`: a tight crop of a single eye. If it is a Van Gogh eye, take it from a left-facing portrait on the approved list of 99 sources.
+- Confirm the eye in `assets/eye-strip.jpg` (Kamal ol Molk, 1899) is on your approved list of 99 sources.
 - In Vercel, add the env vars `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` (same database as the preview site).
 - Connect this repo to a Vercel project and check the preview URL before pointing publicfacing.art (registered at Spaceship) at it.
 
