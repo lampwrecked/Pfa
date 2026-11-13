@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Allowlist · PUBLIC FACING</title>
+<meta name="description" content="Check whether your wallet is on the PUBLIC FACING allowlist.">
+<meta property="og:title" content="PUBLIC FACING · Allowlist">
+<meta property="og:description" content="Check whether your wallet is on the allowlist. Mint Wednesday, December 9.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bone: #EFECE5;
+    --ink: #1A1A18;
+    --ink-dim: #6E6B64;
+    --accent: var(--ink);
+    --safe-t: env(safe-area-inset-top, 0px);
+    --safe-b: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; background: var(--bone); color: var(--ink); }
+  body {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100svh; padding-top: var(--safe-t);
+    display: flex; flex-direction: column;
+  }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  a { color: inherit; }
+  .u {
+    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+  }
+
+  header { padding: 22px 24px 0; text-align: center; }
+  header a { text-decoration: none; letter-spacing: .28em; }
+
+  main {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    padding: 56px 24px 40px; text-align: center; gap: 26px;
+  }
+  .rule { width: 56px; height: 2px; background: var(--accent); }
+  h1 { font-weight: 400; font-size: clamp(30px, 7vw, 46px); letter-spacing: .22em; margin-right: -.22em; line-height: 1.05; }
+  .line { font-size: clamp(19px, 4.4vw, 23px); font-style: italic; max-width: 30ch; }
+
+  /* ---- lookup ---- */
+  .lookup { width: min(88vw, 460px); }
+  .field {
+    display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid var(--ink); padding: 6px 0;
+  }
+  .field:focus-within { border-bottom-width: 2px; padding-bottom: 5px; }
+  .field input {
+    flex: 1; min-width: 0; background: none; border: 0; outline: 0;
+    font: inherit; font-size: 20px; color: var(--ink); padding: 6px 0;
+  }
+  .field input::placeholder { color: var(--ink-dim); font-style: italic; }
+  .field button { padding: 10px 2px; }
+  .field button:hover { color: var(--ink-dim); }
+  .field button:disabled { opacity: .35; cursor: default; }
+  #msg { min-height: 1.4em; margin-top: 10px; color: var(--ink-dim); }
+  #msg.err { color: #8a2d2d; }
+
+  /* ---- pass card ---- */
+  .pass {
+    width: min(88vw, 400px);
+    border: 1px solid var(--ink);
+    padding: 7px;
+    box-shadow: inset 0 1px 3px rgba(26,26,24,.10);
+    opacity: 0; transform: translateY(6px);
+    transition: opacity .5s ease, transform .5s ease;
+  }
+  .pass.show { opacity: 1; transform: none; }
+  .pass[hidden] { display: none; }
+  .pass-in {
+    border: 1px solid var(--ink);
+    padding: 26px 22px 22px;
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+  }
+  .pass .head { letter-spacing: .3em; margin-right: -.3em; }
+  .pass .numeral { font-size: 76px; line-height: .9; font-weight: 400; letter-spacing: .04em; }
+  .pass .phase-name { font-size: 24px; font-style: italic; }
+  .pass .hr { width: 100%; height: 1px; background: var(--ink); opacity: .85; }
+  .pass dl { width: 100%; display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; text-align: left; }
+  .pass dt { color: var(--ink-dim); white-space: nowrap; }
+  .pass dd { font-size: 19px; line-height: 1.2; text-align: right; }
+  .pass .note { font-size: 17px; font-style: italic; color: var(--ink-dim); max-width: 28ch; }
+  .pass.none .numeral { font-size: 56px; }
+
+  .again { margin-top: 4px; color: var(--ink-dim); text-decoration: underline; text-underline-offset: 4px; }
+
+  footer { padding: 16px 24px calc(20px + var(--safe-b)); text-align: center; color: var(--ink-dim); }
+</style>
+</head>
+<body>
+
+<header><a class="u" href="/">PUBLIC FACING</a></header>
+
+<main>
+  <div class="rule"></div>
+  <h1>ALLOWLIST</h1>
+  <p class="line">Enter a wallet to see which phase it may mint in.</p>
+
+  <div class="lookup" id="lookup">
+    <form id="form" class="field" novalidate>
+      <input id="q" name="q" placeholder="0x… or name.eth" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Wallet address or ENS name">
+      <button type="submit" class="u" id="go">Check</button>
+    </form>
+    <div id="msg" class="u" role="status" aria-live="polite"></div>
+  </div>
+
+  <section class="pass" id="pass" hidden aria-live="polite">
+    <div class="pass-in">
+      <div class="head u">PUBLIC FACING</div>
+      <div class="numeral" id="pNum">I</div>
+      <div class="phase-name" id="pName">Guaranteed</div>
+      <div class="hr"></div>
+      <dl>
+        <dt class="u">Date</dt><dd id="pDate">Wednesday, December 9</dd>
+        <dt class="u">Opens</dt><dd id="pTime">To be announced</dd>
+        <dt class="u">Price</dt><dd>$20 in ETH</dd>
+      </dl>
+      <div class="hr"></div>
+      <p class="note" id="pNote"></p>
+    </div>
+  </section>
+
+  <button class="again u" id="again" hidden>Check another wallet</button>
+</main>
+
+<footer class="u">publicfacing.art</footer>
+
+<script>
+  /* ---------------------------------------------------------------
+     PHASES. Fill in the times once they are set (Eastern time).
+     Times show on the pass card exactly as written here.
+  ---------------------------------------------------------------- */
+  const DATE = "Wednesday, December 9";
+  const PHASES = {
+    I:   { name: "Guaranteed",           time: "" },
+    II:  { name: "First come, first served", time: "" },
+    III: { name: "Public",               time: "" },
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const form = $("form"), q = $("q"), go = $("go"), msg = $("msg");
+  const pass = $("pass"), again = $("again"), lookup = $("lookup");
+
+  function say(text, err) { msg.textContent = text; msg.classList.toggle("err", !!err); }
+  const when = (p) => PHASES[p].time ? PHASES[p].time + " ET" : "To be announced";
+
+  function showPass(phase) {
+    const p = phase || "III";
+    pass.classList.toggle("none", !phase);
+    $("pNum").textContent = p;
+    $("pName").textContent = PHASES[p].name;
+    $("pDate").textContent = DATE;
+    $("pTime").textContent = when(p);
+    $("pNote").textContent =
+      phase === "I"  ? "Your wallet also carries into Phase II." :
+      phase === "II" ? "Mint while supply lasts, before the public phase." :
+                       "This wallet is not on the allowlist. The public phase is open to everyone.";
+    lookup.hidden = true;
+    pass.hidden = false; again.hidden = false;
+    requestAnimationFrame(() => requestAnimationFrame(() => pass.classList.add("show")));
+  }
+
+  function reset() {
+    pass.classList.remove("show");
+    pass.hidden = true; again.hidden = true; lookup.hidden = false;
+    q.value = ""; say(""); q.focus();
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const v = q.value.trim();
+    if (!v) { say("Enter a wallet address or ENS name.", true); q.focus(); return; }
+    go.disabled = true; say("Checking…");
+    try {
+      const res = await fetch("/api/allowlist/check?q=" + encodeURIComponent(v));
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) { say(data.error || "Something went wrong. Please try again.", true); return; }
+      say("");
+      showPass(data.phase);
+    } catch (_) {
+      say("Something went wrong. Please try again.", true);
+    } finally {
+      go.disabled = false;
+    }
+  });
+
+  again.addEventListener("click", reset);
+
+  // Allow links like /allowlist/?q=name.eth
+  const pre = new URLSearchParams(location.search).get("q");
+  if (pre) { q.value = pre; form.requestSubmit(); }
+</script>
+</body>
+</html>
