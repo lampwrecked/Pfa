@@ -1,6 +1,6 @@
 # PUBLIC FACING (publicfacing.art)
 
-500 portraits. 99 sources. Mint Wednesday, December 9, 2026. Reveal Saturday, December 12, 2026.
+500 portraits. 99 sources. Mint Wednesday, December 9, 2026.
 
 Social: @publicfacingart (formal, placard voice) and @lampwrecked_ (personal voice).
 
