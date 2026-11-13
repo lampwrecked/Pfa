@@ -13,7 +13,7 @@ Social: @publicfacingart (formal, placard voice) and @lampwrecked_ (personal voi
 ```
 index.html            Home: full-width eye strip, wordmark, dates, email signup, hamburger menu
 api/subscribe.js      Email signup, writes to Upstash Redis (same list as the preview site)
-assets/eye-strip.jpg  Full-width eye strip on the home page (1880x300, from composite 72)
+assets/eye-strip-72.jpg Full-width eye strip on the home page (1880x300, from composite 72)
 ```
 
 ## Reveal rule
@@ -31,10 +31,14 @@ To announce a page: build it, then set `announced: true` for it in the `PAGES` l
 
 ## Before the first deploy
 
-- Confirm the eye in `assets/eye-strip.jpg` (Van Gogh, 1887, per token 72) is on your approved list of 99 sources.
+- Confirm the eye in `assets/eye-strip-72.jpg` (Van Gogh, 1887, per token 72) is on your approved list of 99 sources.
 - In Vercel, add the env vars `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` (same database as the preview site).
 - Connect this repo to a Vercel project and check the preview URL before pointing publicfacing.art (registered at Spaceship) at it.
 
 ## Mint phases (December 9, Eastern)
 
 I. Guaranteed allowlist. II. First come, first served allowlist. III. Public. $20 per piece, paid in ETH. Exact times to be set.
+
+## Swapping the home image
+
+`vercel.json` caches images for a year, so a changed image must get a new filename (for example `eye-strip-73.jpg`), then update the `src` in `index.html`. Re-using the same name keeps serving the old one from browser and CDN caches.
