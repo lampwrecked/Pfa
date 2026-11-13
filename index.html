@@ -26,6 +26,7 @@
     font-family: "Cormorant Garamond", Georgia, serif;
     -webkit-font-smoothing: antialiased;
     min-height: 100svh;
+    padding-top: var(--safe-t);
     display: flex;
     flex-direction: column;
   }
@@ -35,16 +36,10 @@
     font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
   }
 
-  /* ---- top bar ---- */
-  header {
-    display: flex; justify-content: center; align-items: center;
-    padding: calc(20px + var(--safe-t)) 24px 20px;
-  }
-  .wordmark { font-size: 20px; letter-spacing: .32em; font-weight: 500; }
   /* ---- hero ---- */
   main {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 8px 24px 40px; text-align: center; gap: 28px;
+    padding: 36px 24px 40px; text-align: center; gap: 28px;
   }
   .strip {
     width: 100%; aspect-ratio: 2160 / 300;
@@ -85,10 +80,6 @@
 </style>
 </head>
 <body>
-
-<header>
-  <div class="wordmark">PUBLIC FACING</div>
-</header>
 
 <div class="strip">
   <!-- Full-width eye strip, 2160x300 from composite 72. Placeholder shows until it loads. -->
