@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Allowlist admin · PUBLIC FACING</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root { --bone:#EFECE5; --ink:#1A1A18; --ink-dim:#6E6B64; --line:rgba(26,26,24,.18); --err:#8a2d2d; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bone); color: var(--ink); }
+  body { font-family: "Cormorant Garamond", Georgia, serif; -webkit-font-smoothing: antialiased; padding: 28px 20px 60px; }
+  .wrap { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 34px; }
+  .u { font-family: ui-sans-serif, system-ui, -apple-system, sans-serif; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
+  .mono { font-family: ui-monospace, "JetBrains Mono", Menlo, monospace; font-size: 13px; }
+  .dim { color: var(--ink-dim); }
+  .err { color: var(--err); }
+  h1 { font-weight: 400; font-size: 34px; letter-spacing: .2em; }
+  h2 { font-weight: 400; font-size: 24px; margin-bottom: 12px; display: flex; align-items: baseline; gap: 12px; }
+  h2 .u { color: var(--ink-dim); }
+  section { border-top: 1px solid var(--ink); padding-top: 16px; }
+
+  input, select, textarea {
+    font: inherit; font-size: 17px; color: var(--ink); background: transparent;
+    border: 0; border-bottom: 1px solid var(--ink); padding: 8px 0; outline: 0; border-radius: 0;
+    width: 100%;
+  }
+  textarea { border: 1px solid var(--ink); padding: 10px; min-height: 140px; resize: vertical; font-family: ui-monospace, Menlo, monospace; font-size: 13px; }
+  select { appearance: none; -webkit-appearance: none; }
+  label { display: flex; flex-direction: column; gap: 4px; }
+  label > span { color: var(--ink-dim); }
+  button {
+    font: inherit; cursor: pointer; color: var(--bone); background: var(--ink);
+    border: 1px solid var(--ink); padding: 10px 16px;
+    font-family: ui-sans-serif, system-ui, sans-serif; font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+  }
+  button.ghost { background: transparent; color: var(--ink); }
+  button.link { background: none; border: 0; padding: 4px; color: var(--ink-dim); text-decoration: underline; text-underline-offset: 3px; }
+  button:disabled { opacity: .4; cursor: default; }
+  .row { display: flex; gap: 14px; flex-wrap: wrap; align-items: end; }
+  .row > * { flex: 1 1 160px; }
+  .row > button { flex: 0 0 auto; }
+
+  .totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+  .tot { border: 1px solid var(--ink); padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .tot .n { font-size: 40px; line-height: 1; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; padding: 9px 6px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  th { font-weight: 400; }
+  td.num { white-space: nowrap; }
+  td.over { color: var(--err); }
+  td input.cap { width: 60px; font-size: 16px; padding: 2px 0; }
+
+  .chip { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--ink); padding: 2px 4px 2px 8px; margin: 2px 4px 2px 0; }
+  .chip.g { background: var(--ink); color: var(--bone); }
+  .chip button { background: none; border: 0; color: inherit; padding: 0 4px; font-size: 13px; letter-spacing: 0; }
+
+  #report { white-space: pre-wrap; margin-top: 10px; }
+  #gate[hidden], [hidden] { display: none !important; }
+  #gate { max-width: 360px; margin: 18vh auto 0; display: flex; flex-direction: column; gap: 16px; text-align: center; }
+  .rules { font-size: 18px; line-height: 1.45; }
+  .rules b { font-weight: 500; }
+</style>
+</head>
+<body>
+
+<form id="gate" autocomplete="on">
+  <h1>PUBLIC FACING</h1>
+  <p class="u dim">Allowlist admin</p>
+  <input type="password" id="pw" placeholder="Password" autocomplete="current-password" aria-label="Password">
+  <button type="submit">Enter</button>
+  <p id="gateMsg" class="u err"></p>
+</form>
+
+<div class="wrap" id="app" hidden>
+  <header class="row" style="align-items:center">
+    <h1 style="flex:1">ALLOWLIST</h1>
+    <button class="ghost" id="logout" style="flex:0">Lock</button>
+  </header>
+
+  <p class="rules">
+    <b>Phase I, guaranteed:</b> up to each community's cap (10 by default), plus the email list, Lamp, and anyone Lamp invites.
+    <b>Phase II, first come:</b> every wallet on this list, Phase I included.
+    <b>Phase III:</b> public, no list.
+  </p>
+
+  <section>
+    <h2>Totals</h2>
+    <div class="totals">
+      <div class="tot"><span class="u dim">Phase I · Guaranteed</span><span class="n" id="tI">0</span><button id="exI" class="ghost">Download stage I CSV</button></div>
+      <div class="tot"><span class="u dim">Phase II · First come</span><span class="n" id="tII">0</span><button id="exII" class="ghost">Download stage II CSV</button></div>
+    </div>
+    <p class="u dim" style="margin-top:10px">OpenSea format: one address per line, no header. Allowlists lock once minting starts.</p>
+  </section>
+
+  <section>
+    <h2>Sources</h2>
+    <table>
+      <thead><tr><th class="u dim">Source</th><th class="u dim">Guaranteed</th><th class="u dim">All wallets</th><th></th></tr></thead>
+      <tbody id="srcBody"></tbody>
+    </table>
+    <form id="commForm" class="row" style="margin-top:16px">
+      <label><span class="u">New community</span><input id="commName" placeholder="Community name" required></label>
+      <label style="flex:0 0 110px"><span class="u">Guaranteed cap</span><input id="commCap" type="number" min="0" value="10" inputmode="numeric"></label>
+      <button type="submit">Add</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>Add wallets</h2>
+    <form id="addForm" style="display:flex;flex-direction:column;gap:14px">
+      <div class="row">
+        <label><span class="u">Source</span><select id="addSource"></select></label>
+        <label><span class="u">Tier</span>
+          <select id="addTier">
+            <option value="guaranteed">Guaranteed (Phase I + II)</option>
+            <option value="fcfs">First come (Phase II)</option>
+          </select>
+        </label>
+        <label><span class="u">Note (optional)</span><input id="addLabel" placeholder="Name or handle"></label>
+      </div>
+      <label><span class="u">Wallets, one per line (0x addresses or ENS names; commas also work)</span>
+        <textarea id="addWallets" spellcheck="false" autocapitalize="off"></textarea>
+      </label>
+      <div class="row"><button type="submit" id="addBtn">Add to list</button><span></span></div>
+      <div id="report" class="u dim"></div>
+    </form>
+  </section>
+
+  <section>
+    <h2>Wallets <span class="u" id="wCount"></span></h2>
+    <input id="filter" placeholder="Search address, note, or source" style="margin-bottom:8px">
+    <table>
+      <thead><tr><th class="u dim">Wallet</th><th class="u dim">Phase</th><th class="u dim">Sources</th><th></th></tr></thead>
+      <tbody id="wBody"></tbody>
+    </table>
+  </section>
+
+  <p id="appMsg" class="u err"></p>
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const KEY = "pf-al-admin";
+  let PW = sessionStorage.getItem(KEY) || "";
+  let S = null;
+
+  function el(tag, attrs, ...kids) {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (k === "class") n.className = v;
+      else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+      else n.setAttribute(k, v);
+    }
+    for (const k of kids) n.append(k instanceof Node ? k : document.createTextNode(String(k)));
+    return n;
+  }
+
+  async function api(action, extra) {
+    const res = await fetch("/api/allowlist/admin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-admin-password": PW },
+      body: JSON.stringify({ action, ...extra }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 401) { lock("Wrong password."); throw new Error("401"); }
+    if (!res.ok) throw new Error(data.error || "Something went wrong.");
+    return data;
+  }
+
+  function lock(m) {
+    PW = ""; sessionStorage.removeItem(KEY);
+    $("app").hidden = true; $("gate").hidden = false; $("gateMsg").textContent = m || "";
+  }
+
+  async function load() {
+    try { render(await api("state")); $("gate").hidden = true; $("app").hidden = false; }
+    catch (e) { if (e.message !== "401") $("gateMsg").textContent = e.message; }
+  }
+
+  function srcName(slug) {
+    if (S.fixedSources[slug]) return S.fixedSources[slug].name;
+    if (S.communities[slug]) return S.communities[slug].name;
+    return slug + " (deleted)";
+  }
+
+  function render(state) {
+    if (state.communities) S = state;
+    $("tI").textContent = S.totals.I;
+    $("tII").textContent = S.totals.II;
+
+    // per-source totals
+    const all = {};
+    for (const w of S.wallets) for (const s of Object.keys(w.sources)) all[s] = (all[s] || 0) + 1;
+
+    const body = $("srcBody"); body.replaceChildren();
+    for (const [slug, f] of Object.entries(S.fixedSources)) {
+      body.append(el("tr", {}, el("td", {}, f.name, " ", el("span", { class: "u dim" }, "fixed")),
+        el("td", { class: "num" }, S.counts[slug] || 0), el("td", { class: "num" }, all[slug] || 0), el("td")));
+    }
+    const comms = Object.entries(S.communities).sort((a, b) => a[1].name.localeCompare(b[1].name));
+    for (const [slug, c] of comms) {
+      const used = S.counts[slug] || 0;
+      const cap = el("input", { class: "cap", type: "number", min: "0", value: c.cap, inputmode: "numeric", "aria-label": "Cap for " + c.name });
+      cap.addEventListener("change", () => act("upsertCommunity", { slug, name: c.name, cap: Number(cap.value) }));
+      body.append(el("tr", {},
+        el("td", {}, c.name),
+        el("td", { class: "num" + (used > c.cap ? " over" : "") }, used, " / ", cap),
+        el("td", { class: "num" }, all[slug] || 0),
+        el("td", {}, el("button", { class: "link", onclick: () => {
+          if (confirm(`Delete ${c.name}? Its wallets come off the list unless another source added them.`)) act("deleteCommunity", { slug });
+        } }, "Delete"))));
+    }
+
+    // source picker
+    const sel = $("addSource"), keep = sel.value; sel.replaceChildren();
+    const g1 = el("optgroup", { label: "Communities" });
+    for (const [slug, c] of comms) g1.append(el("option", { value: slug }, c.name));
+    const g2 = el("optgroup", { label: "Always guaranteed" });
+    for (const [slug, f] of Object.entries(S.fixedSources)) g2.append(el("option", { value: slug }, f.name));
+    if (comms.length) sel.append(g1);
+    sel.append(g2);
+    if ([...sel.options].some(o => o.value === keep)) sel.value = keep;
+    syncTier();
+
+    renderWallets();
+  }
+
+  function renderWallets() {
+    const f = $("filter").value.trim().toLowerCase();
+    const body = $("wBody"); body.replaceChildren();
+    let shown = 0;
+    for (const w of S.wallets) {
+      const names = Object.keys(w.sources).map(srcName).join(" ").toLowerCase();
+      if (f && !(w.address.includes(f) || (w.label || "").toLowerCase().includes(f) || names.includes(f))) continue;
+      if (++shown > 400) continue;
+      const chips = Object.entries(w.sources).map(([s, t]) =>
+        el("span", { class: "chip u" + (t === "guaranteed" ? " g" : ""), title: t === "guaranteed" ? "Guaranteed" : "First come" },
+          srcName(s),
+          el("button", { "aria-label": "Remove from " + srcName(s), onclick: () => act("removeWallet", { address: w.address, source: s }) }, "×")));
+      body.append(el("tr", {},
+        el("td", {}, el("div", { class: "mono" }, w.address.slice(0, 6) + "…" + w.address.slice(-4)),
+          w.label ? el("div", { class: "dim" }, w.label) : ""),
+        el("td", { class: "num" }, w.phase),
+        el("td", {}, ...chips),
+        el("td", {}, el("button", { class: "link", onclick: () => {
+          if (confirm("Remove this wallet from every source?")) act("removeWallet", { address: w.address });
+        } }, "Remove"))));
+    }
+    $("wCount").textContent = shown > 400 ? `${shown} (showing 400, search to narrow)` : String(shown);
+  }
+
+  function syncTier() {
+    const fixed = !!S.fixedSources[$("addSource").value];
+    $("addTier").disabled = fixed;
+    if (fixed) $("addTier").value = "guaranteed";
+  }
+
+  async function act(action, extra) {
+    $("appMsg").textContent = "";
+    try { const d = await api(action, extra); render(d); return d; }
+    catch (e) { if (e.message !== "401") $("appMsg").textContent = e.message; }
+  }
+
+  function download(name, text) {
+    const url = URL.createObjectURL(new Blob([text], { type: "text/csv" }));
+    const a = el("a", { href: url, download: name }); document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+
+  async function exportPhase(phase) {
+    try {
+      const d = await api("export", { phase });
+      const stamp = new Date().toISOString().slice(0, 10);
+      download(`public-facing-stage-${phase}-${stamp}.csv`, d.csv);
+    } catch (e) { if (e.message !== "401") $("appMsg").textContent = e.message; }
+  }
+
+  $("gate").addEventListener("submit", (e) => {
+    e.preventDefault(); PW = $("pw").value; sessionStorage.setItem(KEY, PW); $("pw").value = ""; load();
+  });
+  $("logout").addEventListener("click", () => lock(""));
+  $("addSource").addEventListener("change", syncTier);
+  $("filter").addEventListener("input", renderWallets);
+  $("exI").addEventListener("click", () => exportPhase("I"));
+  $("exII").addEventListener("click", () => exportPhase("II"));
+
+  $("commForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const d = await act("upsertCommunity", { name: $("commName").value, cap: $("commCap").value });
+    if (d) { $("commName").value = ""; $("commCap").value = 10; }
+  });
+
+  $("addForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = $("addBtn"); btn.disabled = true; $("report").textContent = "Adding… (ENS names take a moment)";
+    const d = await act("addWallets", {
+      source: $("addSource").value, tier: $("addTier").value,
+      label: $("addLabel").value, wallets: $("addWallets").value,
+    });
+    btn.disabled = false;
+    if (!d) { $("report").textContent = ""; return; }
+    const r = d.report, lines = [];
+    lines.push(`Added ${r.added.length}. Updated ${r.updated.length}. Already there ${r.unchanged.length}.`);
+    if (r.overCap.length) lines.push(`Over the guaranteed cap, not added (${r.overCap.length}): ${r.overCap.join(", ")}`);
+    if (r.failed.length) lines.push(`Could not read (${r.failed.length}): ` + r.failed.map(f => `${f.input} (${f.reason})`).join(", "));
+    $("report").textContent = lines.join("\n");
+    // Keep only the lines that didn't go in, so they can be fixed and re-sent.
+    $("addWallets").value = [...r.overCap, ...r.failed.map(f => f.input)].join("\n");
+    $("addLabel").value = "";
+  });
+
+  if (PW) load(); else $("gate").hidden = false;
+</script>
+</body>
+</html>
