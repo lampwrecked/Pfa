@@ -119,7 +119,7 @@
 <main>
   <div class="eye">
     <!-- Drop the cropped eye at assets/eye.jpg. Until it exists, a plain placeholder shows. -->
-    <img src="assets/eye.jpg" alt="" onerror="this.remove()">
+    <img src="assets/eye.jpg" alt="" onload="this.nextElementSibling.remove()" onerror="this.remove()">
     <div class="ph u">Eye crop</div>
   </div>
 
